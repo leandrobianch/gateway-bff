@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  gateway: 
+    image: leandrobianch/curso-gateway
+    container_name: cursos-gateway
+    build: 
+        context: $PWD/plataforma-online/gateway/docker/nginx
+        dockerfile: $PWD/plataforma-online/gateway/docker/Dockerfile.gateway
+    ports: 
+      - 81:81  
+    networks: 
+      - backend
+    depends_on:
+      - backend-login-api
+      - frontend-site-publico
+  backend-login-api:
+    image: leandrobianch/cursos-backend-login
+    container_name: cursos-backend-login
+    build:
+        context: $PWD/plataforma-online/backend/login
+        dockerfile: $PWD/plataforma-online/backend/login/docker/Dockerfile.backend.login
+    ports:
+      - "5000:81"
+    environment:
+        - PORT=5000
+    networks:
+      - backend    
+  frontend-site-publico:
+    image: leandrobianch/cursos-frontend-site-publico
+    container_name: cursos-frontend-site-publico
+    build:
+        context: $PWD/plataforma-online/frontend/site.publico
+        dockerfile: $PWD/plataforma-online/frontend/site.publico/docker/Dockerfile.frontend.site.publico
+    ports: 
+      - "8081:81"
+    networks: 
+      - backend
+networks:  
+  backend:
+volumes:
+  db-data:
